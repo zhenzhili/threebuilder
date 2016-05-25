@@ -12,7 +12,6 @@ import api from './api';
 const app = new Koa();
 
 app.keys = ['robu-secret'];
-
 app.use(middleware());
 app.use(auth());
 app.use(api());

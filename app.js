@@ -10,13 +10,13 @@ import {
     connectDatabase
 } from './server/db';
 
-import { config } from './config';
+import config from './config';
 
 const port = process.env.PORT || 3000;
 
 (async() => {
     try {
-        const info = await connectDatabase(config.mongo);
+        const info = await connectDatabase(config.mongo.url);
         console.log(`Connected to ${info.host}:${info.port}/${info.name}`);
     } catch (error) {
         console.error('Unable to connect to database');

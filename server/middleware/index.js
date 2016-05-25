@@ -12,13 +12,13 @@ import bodyParser from 'koa-bodyparser';
 import session from "koa-session2";
 
 export default function middleware() {
-    return compose([
+    return convert(compose([
         logger(),
         helmet(), // reset HTTP headers (e.g. remove x-powered-by)
-        convert(cors()),
+        cors(),
         bodyParser(),
         session({
             key: "robu-log",   //default "koa:sess"
         })
-    ]);
+    ]));
 }

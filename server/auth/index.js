@@ -1,11 +1,16 @@
-/**
- * Created by lizhenzhi on 2016/5/25.
- */
 'use strict';
 
+import convert from 'koa-convert';
 import passport from 'koa-passport';
 import compose from 'koa-compose';
+import importDir from 'import-dir';
 import User from '../models/user';
+
+const strategies = importDir('./strategies');
+
+Object.keys(strategies).forEach(name => {
+    passport.use(name, strategies[name]);
+});
 
 passport.serializeUser((user, done) => done(null, user._id));
 
@@ -21,8 +26,16 @@ passport.deserializeUser((id, done) => {
 });
 
 export default function auth() {
-    return compose([
+    return convert(compose([
         passport.initialize(),
         passport.session(),
-    ]);
+    ]));
+}
+
+export function isClientAuthenticated() {
+    return passport.authenticate('client-basic', { session: false });
+}
+
+export function isBearerAuthenticated() {
+    return passport.authenticate('bearer', { session: false });
 }
