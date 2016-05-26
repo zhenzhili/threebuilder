@@ -32,18 +32,6 @@ server.exchange(
         return accessToken;
     }));
 
-export function token() {
-    return compose([
-        isClientAuthenticated(),
-        async (ctx, next) => {
-            ctx.state.user = ctx.passport.user;
-            await next();
-        },
-        server.token(),
-        server.errorHandler(),
-    ]);
-}
-
 export default (router) => {
     router
         .post('/auth', isClientAuthenticated(),
