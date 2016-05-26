@@ -12,9 +12,9 @@ import api from './api';
 const app = new Koa();
 
 app.keys = ['robu-secret'];
-middleware(app);
-assert(app);
-auth(app);
+app.proxy = true;
+//assert(app);
+//auth(app);
 api(app);
 
 export default app;

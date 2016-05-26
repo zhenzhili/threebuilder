@@ -5,7 +5,9 @@
 
 import app from './server';
 import {
-    connectDatabase
+    connectDatabase,
+    registerLocalClient,
+    registerAdminUser,
 } from './server/db';
 
 import config from './config';
@@ -21,8 +23,10 @@ const port = process.env.PORT || 3000;
     }
 
     try {
-        await app.listen(port);
-        console.log(`Server started on port ${port}`);
+        await registerLocalClient();
+        await registerAdminUser();
+        await app.listen(config.app.port);
+        console.log(`Server started on port ${config.app.port}`);
     } catch (error) {
         console.log(error);
     }
