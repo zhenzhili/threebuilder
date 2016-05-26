@@ -6,6 +6,7 @@ import convert from 'koa-convert';
 import Router from 'koa-router';
 import importDir from 'import-dir';
 import users from './routes/users'
+import User from '../models/user';
 
 //const routes = importDir('./routes');
 
@@ -13,7 +14,7 @@ export default function api(app) {
     const router = new Router({ prefix:'/api' });
 
     router
-        .use('/users', users.routes());
+        .get('/users', async ctx =>{console.log(1); ctx.body = await User.find({})});
 
     //Object.keys(routes).forEach(name => routes[name](router));
 
