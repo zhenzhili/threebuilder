@@ -3,8 +3,6 @@
  */
 'use strict';
 
-'use strict';
-
 import app from './server';
 import {
     connectDatabase
