@@ -16,6 +16,7 @@ assert(app);
 middleware(app);
 auth(app);
 api(app);
+
 app.use(ctx => ctx.status = 404);
 
 export default app;
