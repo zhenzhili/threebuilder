@@ -10,7 +10,10 @@ angular.module('robu', [
     'ngAnimate'
 ])
 .config(['$locationProvider', '$stateProvider', '$urlRouterProvider', '$httpProvider', function($locationProvider, $stateProvider, $urlRouterProvider, $httpProvider){
-    $locationProvider.html5Mode(true);
+    $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false
+    });
 
     $stateProvider
         .state('home', {

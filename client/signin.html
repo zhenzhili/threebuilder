@@ -1,10 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="signin">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, minimal-ui">
 </head>
 <body>
-
+    <!-- build:js /scripts/signin-vendor.js -->
+    <!-- bower:js -->
+    <script src="/bower_components/angular/angular.js"></script>
+    <script src="/bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+    <script>
+        angular.module('signin', ['LocalStorageModule'])
+                .controller('mainCtrl', ['$scope', '$http', 'localStorageService', function($scope, $http, localStorageService){
+                    $scope.email = 'admin@kmanjs.com';
+                    $scope.password = 'pass';
+                    $scope.login = function(){
+                        $http.post('/signin', {
+                            email: $scope.email,
+                            password: $scope.password
+                        }).success(function(data){
+                            localStorageService.set('token', data.token);
+                            localStorageService.set('user', data.user)
+                            window.location.replace('/');
+                        }).error(function(data){
+                            $scope.error = data;
+                        });
+                    };
+                }]);
+    </script>
 </body>
 </html>

@@ -101,6 +101,35 @@ module.exports = (grunt)->
       options:
         logConcurrentOutput: true
 
+    jshint:
+      options:
+        reporter: stylish
+      client:
+        options:
+          jshintrc: 'test/client/.jshintrc'
+        src: [
+          'client/scripts/**/*.js'
+        ]
+      clientSpecs:
+        options:
+          jshintrc: 'test/client/.jshintrc'
+        src: [
+          'test/client/spec/**/*.js'
+        ]
+
+    clean:
+      dist: [
+        '.sass-cache'
+        '.tmp'
+        'client/.tmp'
+        'dist'
+      ]
+      server: [
+        'client/.tmp'
+        '.tmp'
+        '.sass-cache'
+      ]
+
     wiredep:
       html:
         src: [
@@ -125,10 +154,11 @@ module.exports = (grunt)->
         cwd: 'client/.tmp/styles/'
         src: '**/*.css'
         dest: 'client/.tmp/styles/'
+
     compass:
       options:
         sassDir: 'client/styles'
-        cssDir: 'client/.tmp/styles'
+        cssDir: 'client/styles'
         generatedImagesDir: 'client/.tmp/images/generated'
         imagesDir: 'client/images'
         javascriptsDir: 'client/scripts'
@@ -147,8 +177,192 @@ module.exports = (grunt)->
         options:
           debugInfo: true
 
+    filerev:
+      dist:
+        src: [
+          'dist/client/scripts/{,*/}*.js',
+          'dist/client/styles/{,*/}*.css',
+          'dist/client/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+          'dist/client/styles/fonts/*'
+        ]
+
+    useminPrepare:
+      html: 'client/index.html'
+      options:
+        dest: 'dist/client'
+        staging: 'client/.tmp'
+        flow:
+          html:
+            steps:
+              js: [
+                'concat'
+                'uglifyjs'
+              ]
+              css: [
+                'cssmin'
+              ]
+            post: {}
+
+    usemin:
+      html: [
+        'dist/client/{,*/}*.html'
+      ]
+      css: [
+        'dist/client/styles/{,*/}*.css'
+      ]
+      options:
+        assertsDirs: [
+          'dist/client'
+          'dist/client/images'
+        ]
+
+    htmlmin:
+      dist:
+        options:
+          collapseWhitespace: true
+          removeComments: true
+        expand: true
+        cwd: 'dist/client'
+        src: [
+          '*.html'
+          'views/{,*/}*.html'
+        ]
+        dest: 'dist/client'
+
+    ngAnnotate:
+      options:
+        singleQuotes: true
+      dist:
+        expand: true
+        cwd: 'client/.tmp/concat/scripts'
+        src: [
+          '**/*.js'
+        ]
+        dest: 'client/.tmp/concat/scripts'
+
+    ngtemplates:
+      dist:
+        options:
+          prefix: '/views/'
+          usemin: '/scripts/scripts.js'
+          module: 'kman'
+          htmlmin:
+            collapseWhitespace: true
+            removeComments: true
+        cwd: 'client/views'
+        src: [
+          '**/*.html'
+        ]
+        dest: 'client/.tmp/ngtemplates/app.template.js'
+
+    copy:
+      asserts:
+        expand: true
+        dot: true
+        cwd: 'client'
+        dest: 'dist/client'
+        src: [
+          '*.{ico,png,txt}'
+          '.htaccess'
+          '*.html'
+          'views/{,*/}*.html'
+          'images/{,*/}*.{webp,jpg,ico,png}'
+          'fonts/*'
+        ]
+      images:
+        expand: true
+        cwd: 'client/.tmp/images'
+        dest: 'dist/client/images'
+        src: [
+          'generated/*'
+        ]
+      fonts:
+        expand: true
+        cwd: 'client'
+        flatten: true
+        filter: 'isFile'
+        src: [
+          '**/*.{eot,svg,ttf,woff}'
+        ]
+        dest: 'dist/client/fonts/'
+      server:
+        expand: true
+        cwd: '.'
+        src: [
+          'server/**/*'
+          'app.js'
+          'package.json'
+          'config.js'
+          'README.md'
+        ]
+        dest: 'dist'
+      styles:
+        expand: true
+        cwd: 'client/styles'
+        dest: 'client/.tmp/styles'
+        src: '**/*.css'
+
+      nginx:
+        expand: true
+        cwd: '.'
+        src: 'nginx/**/*'
+        dest: 'dist'
+
+    compress:
+      dist:
+        options:
+          archive: 'zips/<%= pkg.name %>-V<%= pkg.version %>.zip'
+        expand: true
+        cwd: 'dist/'
+        src: [
+          '**/*'
+        ]
+        dest: '<%= pkg.name %>'
+
+    karma:
+      options:
+        configFile: 'test/client/karma.conf.js'
+      main: {}
+
+    protractor:
+      options:
+        configFile: 'test/client/e2e.conf.js'
+        noColor: false
+      main: {}
+
+  @registerTask 'build', [
+    'clean'
+    'wiredep'
+    'useminPrepare'
+    'compass:dist'
+    'autoprefixer'
+    'ngtemplates'
+    'concat'
+    'ngAnnotate'
+    'copy'
+    'cssmin'
+    'uglify'
+    'filerev'
+    'usemin'
+    'htmlmin'
+    'compress'
+  ]
+
   @registerTask 'dev', [
     'wiredep'
     'compass:server'
     'concurrent'
+  ]
+
+  @registerTask 'client_unit', [
+    'karma'
+  ]
+
+  @registerTask 'client_e2e', [
+    'protractor'
+  ]
+
+  @registerTask 'default', [
+    'jshint'
+    'build'
   ]

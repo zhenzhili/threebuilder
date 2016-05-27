@@ -98,3 +98,4 @@ jspm_packages
 .nodemon
 client/bower_components/
 node_modules/
+/dist/
