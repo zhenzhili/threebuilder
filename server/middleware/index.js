@@ -3,19 +3,23 @@
  */
 'use strict';
 
+import compose from 'koa-compose';
 import convert from 'koa-convert';
 import logger from 'koa-logger';
 import helmet from 'koa-helmet';
 import cors from 'koa-cors';
 import bodyParser from 'koa-bodyparser';
 import session from "koa-session2";
+import config from "../../config"
 
-export default function middleware(app) {
-    app.use(convert(logger()));
-    app.use(convert(helmet()));
-    app.use(convert(cors()));
-    app.use(convert(bodyParser()));
-    app.use(session({
-        key: "robu-log",   //default "koa:sess"
-    }));
+export default function middleware() {
+    return compose([
+        logger(),
+        helmet(),
+        cors(),
+        bodyParser(),
+        session({
+            key: config.secret,   //default "koa:sess"
+        }),
+    ]);
 }

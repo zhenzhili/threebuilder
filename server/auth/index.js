@@ -1,6 +1,6 @@
 'use strict';
 
-import convert from 'koa-convert';
+import compose from 'koa-compose';
 import passport from 'koa-passport';
 import importDir from 'import-dir';
 import User from '../models/user';
@@ -24,9 +24,11 @@ passport.deserializeUser((id, done) => {
     })();
 });
 
-export default function auth(app) {
-    app.use(convert(passport.initialize()));
-    app.use(convert(passport.session()));
+export default function auth() {
+    return compose([
+        passport.initialize(),
+        passport.session(),
+    ]);
 }
 
 export function isClientAuthenticated() {
